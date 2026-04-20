@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioAlert | Silent Heart Attack Detection</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <nav>
+        <div class="logo">
+            <span class="heart-icon">❤️</span>
+            <span class="logo-text">Cardio<span>Alert</span></span>
+        </div>
+        <div class="nav-status">
+            <span class="status-dot"></span> System Active
+        </div>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Deep Learning Cardiac Risk Assessment</h1>
+            <p>Multimodal fusion of 12-lead ECG and Clinical Biomarkers for early detection.</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left: Input Form -->
+            <section class="card glass">
+                <div class="card-header">
+                    <h2>Patient Data</h2>
+                    <span class="badge">REQUIRED</span>
+                </div>
+                
+                <form id="predictionForm">
+                    <div class="form-section">
+                        <h3>Clinical Biomarkers</h3>
+                        <div class="input-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" name="age" value="63" required>
+                        </div>
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="sex">Sex</label>
+                                <select id="sex" name="sex">
+                                    <option value="0">Male</option>
+                                    <option value="1">Female</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="cp">Chest Pain Type</label>
+                                <select id="cp" name="cp">
+                                    <option value="0">Typical Angina</option>
+                                    <option value="1">Atypical Angina</option>
+                                    <option value="2">Non-anginal Pain</option>
+                                    <option value="3" selected>Asymptomatic</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="trestbps">Resting BP (mm Hg)</label>
+                                <input type="number" id="trestbps" name="trestbps" value="145">
+                            </div>
+                            <div class="input-group">
+                                <label for="chol">Cholesterol (mg/dl)</label>
+                                <input type="number" id="chol" name="chol" value="233">
+                            </div>
+                        </div>
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="thalach">Max HR Achieved</label>
+                                <input type="number" id="thalach" name="thalach" value="150">
+                            </div>
+                            <div class="input-group">
+                                <label for="oldpeak">ST Depression</label>
+                                <input type="number" step="0.1" id="oldpeak" name="oldpeak" value="2.3">
+                            </div>
+                        </div>
+                        
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="exang">Exercise Angina</label>
+                                <select id="exang" name="exang">
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="slope">ST Slope</label>
+                                <select id="slope" name="slope">
+                                    <option value="0">Upsloping</option>
+                                    <option value="1" selected>Flat</option>
+                                    <option value="2">Downsloping</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="thal">Thalassemia</label>
+                                <select id="thal" name="thal">
+                                    <option value="0">Normal</option>
+                                    <option value="1" selected>Fixed Defect</option>
+                                    <option value="2">Reversable Defect</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="fbs">Fasting BS > 120</label>
+                                <select id="fbs" name="fbs">
+                                    <option value="0">No</option>
+                                    <option value="1" selected>Yes</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="restecg">Resting ECG</label>
+                                <select id="restecg" name="restecg">
+                                    <option value="0" selected>Normal</option>
+                                    <option value="1">ST-T Abnormality</option>
+                                    <option value="2">LV Hypertrophy</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>ECG Signal (PTB-XL .hea)</h3>
+                        <div class="file-upload" id="dropZone">
+                            <input type="file" id="ecgFile" name="ecg_files" accept=".hea,.dat" multiple>
+                            <div class="upload-content">
+                                <div class="upload-icon">📄</div>
+                                <p>Drag & drop <b>.hea</b> and <b>.dat</b> files or <span>browse</span></p>
+                                <small>Both files are required for analysis</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="predictBtn" class="primary-btn">
+                        <span>Analyze Cardiac Health</span>
+                        <div class="loader" id="loader"></div>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Right: Results -->
+            <div class="results-column">
+                <section class="card glass result-card" id="resultPlaceholder">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3>Awaiting Analysis</h3>
+                        <p>Complete the patient profile and upload ECG to generate report.</p>
+                    </div>
+                </section>
+
+                <section class="card glass result-card hidden" id="resultContainer">
+                    <div class="card-header">
+                        <h2>Analysis Report</h2>
+                        <span id="riskBadge" class="risk-badge">HIGH RISK</span>
+                    </div>
+
+                    <div class="score-container">
+                        <div class="probability-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="probabilityPath" class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <text x="18" y="20.35" class="percentage" id="probText">0%</text>
+                            </svg>
+                        </div>
+                        <div class="score-info">
+                            <h3>Probability Score</h3>
+                            <p id="riskDescription">The model detected significant patterns indicative of cardiac distress.</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Feature Importance (SHAP)</h3>
+                        <canvas id="shapChart"></canvas>
+                        <p class="chart-note">Positive values increase risk, negative values decrease risk.</p>
+                    </div>
+
+                    <div class="recommendations">
+                        <h3>Clinical Recommendations</h3>
+                        <ul id="recList">
+                            <li>Consult with a cardiologist immediately.</li>
+                            <li>Perform a follow-up Troponin T test.</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
